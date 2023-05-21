@@ -7,7 +7,7 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # secrets.json 파일 경로
-secret_file = os.path.join(BASE_DIR, 'secret.json')
+secret_file = os.path.join(BASE_DIR, 'secrets.json')
 
 # secrets.json 파일 읽기
 with open(secret_file, 'r') as f:
