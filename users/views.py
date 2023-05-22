@@ -34,7 +34,7 @@ class UserDetailView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"message: 권한이 없습니다"}, status=status.HTTP_403_FORBIDDEN)
+            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 
     # 회원 비활성화
     def delete(self, request, user_id):
@@ -63,7 +63,7 @@ class ChangePasswordView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"message: 권한이 없습니다"}, status=status.HTTP_403_FORBIDDEN)
+            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 
 
 # 마이 페이지
@@ -77,7 +77,7 @@ class MyPageView(APIView):
             serializer = MyPageSerializer(user_profile)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response({"message: 권한이 없습니다"}, status=status.HTTP_403_FORBIDDEN)
+            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 
     # 마이 페이지 - 회원 정보 편집
     def put(self, request, user_id):
@@ -90,22 +90,21 @@ class MyPageView(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"message: 권한이 없습니다"}, status=status.HTTP_403_FORBIDDEN)
+            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 
 
 # 팔로우/팔로워
 class FollowView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-    
     def post(self, request, user_id):
         you = get_object_or_404(UserProfile, id=user_id)
-        me = request.user.user_profile
+        me = request.user
+        print(me, you)
         if me != you:
             if me in you.followers.all():
                 you.followers.remove(me)
-                return Response({"message: unfollow했습니다!"}, status=status.HTTP_200_OK)
+                return Response("unfollow했습니다.", status=status.HTTP_200_OK)
             else:
                 you.followers.add(me)
-                return Response({"message: follow했습니다!"}, status=status.HTTP_200_OK)
+                return Response("follow했습니다.", status=status.HTTP_200_OK)
         else:
-            return Response({"message: 본인은 팔로우 할 수 없습니다!"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response('본인을 팔로우 하는 사람이 어딨어?!', status=status.HTTP_400_BAD_REQUEST)
