@@ -25,13 +25,6 @@ def user_name_validator(username):
         return True
     return False
 
-def nickname_validator(nickname):
-    nickname_validation = r"^[A-Za-z가-힣0-9]{3,10}$"
-    
-    if not re.search(nickname_validation, str(nickname)):
-        return True
-    return False
-
 
 class UserManager(BaseUserManager):
     def create_user(self, user_name, email, password=None):
@@ -90,31 +83,3 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
-
-
-# 사용자 프로필 모델
-class UserProfile(models.Model):
-    profile_image = models.ImageField("PROFILE IMAGE", default="default_profile_pic.jpg", upload_to="profile_pics", blank=True)
-    nickname = models.CharField("NICKNAME", max_length=10, null=True, unique=True, error_messages={"unique": "이미 사용 중이거나 탈퇴한 사용자의 닉네임입니다!"})
-    age = models.IntegerField("AGE", null=True)
-    gender_choices = [("MALE", "male"), ("FEMALE", "female"), ("OTHER", "other"),]
-    gender = models.CharField("GENDER", max_length=6, null=True, choices=gender_choices,)
-    introduction = models.TextField(null=True, default="안녕하세요!")
-    review_cnt = models.PositiveIntegerField("Review cnt", default=0)
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="USER", related_name="user_profile")
-
-    followings = models.ManyToManyField("self", symmetrical=False, blank=True, related_name="followers")
-    
-    def __str__(self):
-        return f"{self.user.user_name}, {self.nickname}"
-
-    @property
-    def review_count_add(self):
-        self.review_cnt += 1
-        self.save()
-
-    @property
-    def review_count_remove(self):
-        self.review_cnt -= 1
-        self.save()
