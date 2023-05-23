@@ -3,8 +3,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework import status
 from rest_framework import permissions
 from rest_framework.response import Response
-from users.serializers import SignUpSerializer, UserUpdateSerializer, ChangePasswordSerializer, MyPageSerializer, MyPageUpdateSerializer
-from users.models import User, UserProfile
+from users.serializers import SignUpSerializer, ChangePasswordSerializer, MyPageSerializer
+from users.models import User
 from django.utils import timezone
 
 
@@ -19,22 +19,9 @@ class SignUpView(APIView):
             return Response({"message": f"${serializer.errors}"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 회원 정보 수정/ 회원 비활성화
+# 회원 비활성화
 class UserDetailView(APIView):
     permission_classes = [permissions.IsAuthenticated]
-
-    # 회원 정보 수정
-    def put(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
-        if request.user.email == user.email:
-            serializer = UserUpdateSerializer(user, data=request.data, context={"request": request})
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 
     # 회원 비활성화
     def delete(self, request, user_id):
@@ -72,39 +59,9 @@ class MyPageView(APIView):
 
     # 마이 페이지 - 회원 정보 조회
     def get(self, request, user_id):
-        user_profile = get_object_or_404(UserProfile, id=user_id)
-        if request.user.email == user_profile.user.email:
-            serializer = MyPageSerializer(user_profile)
+        my_page = get_object_or_404(User, id=user_id)
+        if request.user.email == my_page.email:
+            serializer = MyPageSerializer(my_page)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
-
-    # 마이 페이지 - 회원 정보 편집
-    def put(self, request, user_id):
-        user_profile = get_object_or_404(UserProfile, id=user_id)
-        if request.user.email == user_profile.user.email:
-            serializer = MyPageUpdateSerializer(user_profile, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({"message": "프로필이 수정 되었습니다!"}, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
-
-
-# 팔로우/팔로워
-class FollowView(APIView):
-    def post(self, request, user_id):
-        you = get_object_or_404(UserProfile, id=user_id)
-        me = request.user
-        print(me, you)
-        if me != you:
-            if me in you.followers.all():
-                you.followers.remove(me)
-                return Response("unfollow했습니다.", status=status.HTTP_200_OK)
-            else:
-                you.followers.add(me)
-                return Response("follow했습니다.", status=status.HTTP_200_OK)
-        else:
-            return Response('본인을 팔로우 하는 사람이 어딨어?!', status=status.HTTP_400_BAD_REQUEST)
