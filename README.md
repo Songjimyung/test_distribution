@@ -7,6 +7,8 @@ AIA6_BackEnd
 ![photo-1485846234645-a62644f84728](https://github.com/nueeng/AIA6_BackEnd/assets/127704498/3122696a-1247-442b-9f4b-4bf357419313)
 웹페이지 이미지 들어갈 예정  
 
+[Frontend Repository](https://github.com/nueeng/AIA6_FrontEnd)  
+
 ## 📚 Stacks
 
 <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white"><img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white"><img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
@@ -42,12 +44,6 @@ AIA6_BackEnd
     2. 하나를 선택 = input, 근데 없으면?(다시 검색하기 - 또 스무개/위에서 띄운 10개는 제외)
     3. 해당 영화 줄거리 / 포스터 / 후기 + AI가 input과 장르가 유사하고 평점이 높은 영화 추천 3개 (영화 상세 페이지)
 
-- 추가도전사항
-    1. 좌측 메뉴 바 슬라이드 인 / 슬라이드 아웃 기능
-    2. 영화 추천 페이지 모달 기능
-    3. 디자인 조금 더 다듬기
-    4. 구글 소셜 로그인 기능
-
 ## 👤 Implement AI
 <br/>
 
@@ -65,3 +61,17 @@ AI가 구현되는 과정 상세히 적어보기
     <tr/>
   </tbody>
 </table>
+
+## ✅ Checklist
+
+0. **※ Machine Learning**
+1. 좌측 메뉴 바 슬라이드 인 / 슬라이드 아웃 기능
+2. 영화 추천 페이지 모달 기능
+3. 디자인 조금 더 다듬기
+4. 구글 소셜 로그인 기능
+5. tmdb api 이용한 프로젝트라고 소개글 추가
+6. 개발 끝난 후, print문이나 쓸데없는 주석, 사용되지 않는 코드 등의 legacy code 삭제시간 갖기
+7. review모델 평점 필드(rating)가 없다✅
+8. likes 테스트코드 -ing
+9. movie admin 등록
+10. review에서 movie_id 활용 로직 구체화
