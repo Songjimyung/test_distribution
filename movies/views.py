@@ -4,6 +4,7 @@ from .models import Movie, Genre
 from .serializers import MovieSerializer
 from rest_framework.views import APIView
 import requests
+import random
 
 # Create your views here.
 
@@ -32,33 +33,38 @@ class MovieListView(APIView):
 
         response = requests.get(movies_url, params=params)
         movies_data = response.json()['results']
+        
+        random_movies = random.sample(movies_data, 10)
+        
         serialized_data = []
 
         # 영화 정보 저장
-        for movie_data in movies_data:
+        for movie_data in random_movies:
             genre_ids = movie_data['genre_ids']
             genres = Genre.objects.filter(id__in=genre_ids)
             genre_names = [genre.name for genre in genres]
+            poster_path = "https://image.tmdb.org/t/p/w500/" + movie_data['poster_path']
             movie = Movie(
                 id=movie_data['id'],
                 title=movie_data['title'],
                 overview=movie_data['overview'],
                 release_date=movie_data['release_date'],
                 vote_average=movie_data['vote_average'],
-                poster_path=movie_data['poster_path']
+                poster_path=poster_path
             )
             movie.save()
             movie.genres.set(genres)
             # 영화 정보 출력
             movie_data['genre_ids'] = genre_names
+            movie_data['poster_path']=poster_path
             movie_json = {
                 "id": movie_data['id'],
                 "title": movie_data['title'],
-                "overview": movie_data["overview"],
+                "overview": movie_data['overview'],
                 "release_date" : movie_data['release_date'],
                 "vote_average" : movie_data['vote_average'],
-                "poster_path" : movie_data['poster_path'],
-                "genres" : movie_data["genre_ids"]
+                "genres" : movie_data['genre_ids'],
+                "poster_path" : movie_data['poster_path']
             }
             
             serialized_data.append(movie_json)
