@@ -43,26 +43,28 @@ class MovieListView(APIView):
             genre_ids = movie_data['genre_ids']
             genres = Genre.objects.filter(id__in=genre_ids)
             genre_names = [genre.name for genre in genres]
+            poster_path = "https://image.tmdb.org/t/p/w500/" + movie_data['poster_path']
             movie = Movie(
                 id=movie_data['id'],
                 title=movie_data['title'],
                 overview=movie_data['overview'],
                 release_date=movie_data['release_date'],
                 vote_average=movie_data['vote_average'],
-                poster_path=movie_data['poster_path']
+                poster_path=poster_path
             )
             movie.save()
             movie.genres.set(genres)
             # 영화 정보 출력
             movie_data['genre_ids'] = genre_names
+            movie_data['poster_path']=poster_path
             movie_json = {
                 "id": movie_data['id'],
                 "title": movie_data['title'],
-                "overview": movie_data["overview"],
+                "overview": movie_data['overview'],
                 "release_date" : movie_data['release_date'],
                 "vote_average" : movie_data['vote_average'],
-                "poster_path" : movie_data['poster_path'],
-                "genres" : movie_data["genre_ids"]
+                "genres" : movie_data['genre_ids'],
+                "poster_path" : movie_data['poster_path']
             }
             
             serialized_data.append(movie_json)
