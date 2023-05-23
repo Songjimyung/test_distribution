@@ -18,13 +18,13 @@ AIA6_BackEnd
 <img src="https://img.shields.io/badge/TMDB-pink?style=for-the-badge&logo=themoviedatabase&logoColor=black">
 
 
-##  Dependency
+## 📽 Dependency
 
 의존성 PIP
 
 
 
-##  Features
+## 🎬 Features
 
 - 로그인 / 회원가입
     - 회원가입(이메일 or 소셜은 추후 논의)
@@ -48,7 +48,7 @@ AIA6_BackEnd
     3. 디자인 조금 더 다듬기
     4. 구글 소셜 로그인 기능
 
-## Implement AI
+## 👤 Implement AI
 <br/>
 
 AI가 구현되는 과정 상세히 적어보기
