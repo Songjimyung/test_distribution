@@ -80,7 +80,7 @@ class ReviewReadTest(APITestCase):
 
 class ReviewDetailTest(APITestCase):
     '''
-    Review가 잘 수정되는지 검증하는 Test class입니다.
+    Review가 잘 수정되는지, 삭제되는지 검증하는 Test class입니다.
     '''
     @classmethod
     def setUpTestData(cls):
@@ -114,3 +114,23 @@ class ReviewDetailTest(APITestCase):
             HTTP_AUTHORIZATION=f"Bearer {self.access_token}"
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_delete_review(self):
+        # 리뷰 생성 후
+        response = self.client.post(
+            path=reverse("review_view"),
+            data=self.review_data,
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}"
+        )
+        self.assertEqual(response.status_code, 201)
+
+        # 리뷰 삭제 테스트
+        review = Review.objects.get(content=self.review_data['content'])  # 리뷰 객체 가져오기
+        review_url = review.get_absolute_url() # <int:review_id>/값에 관계없이 url 가져오기
+
+        # 리뷰 수정 테스트
+        response = self.client.delete(
+            path=review_url,
+            HTTP_AUTHORIZATION=f"Bearer {self.access_token}"
+        )
+        self.assertEqual(response.status_code, 204)
