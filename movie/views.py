@@ -4,6 +4,7 @@ from .models import Movie, Genre
 from .serializers import MovieSerializer
 from rest_framework.views import APIView
 import requests
+import random
 
 # Create your views here.
 
@@ -32,10 +33,13 @@ class MovieListView(APIView):
 
         response = requests.get(movies_url, params=params)
         movies_data = response.json()['results']
+        
+        random_movies = random.sample(movies_data, 10)
+        
         serialized_data = []
 
         # 영화 정보 저장
-        for movie_data in movies_data:
+        for movie_data in random_movies:
             genre_ids = movie_data['genre_ids']
             genres = Genre.objects.filter(id__in=genre_ids)
             genre_names = [genre.name for genre in genres]
