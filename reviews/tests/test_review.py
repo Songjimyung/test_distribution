@@ -65,12 +65,10 @@ class ReviewReadTest(APITestCase):
             cls.reviews.append(Review.objects.create(content=cls.faker.sentence(), user=cls.user))
 
     def test_get_review(self):
-        for review in self.reviews:
-            url = review.get_absolute_url() # review 모델 참고
+        for i, review in enumerate(self.reviews):
+            url = reverse("review_view")
             response = self.client.get(url)
             serializer = ReviewSerializer(review).data
             for key, value in serializer.items():
-                self.asserEqual(response.data[key], value)
-                print(key, value)
-            # 위코드가 아니면 아래코드로 일일히 다 노가다 확인해야함
-            # self.assertEqual(review.title, response.data["title"])
+                print(key,value)
+                self.assertEqual(response.data[i][key], value)
