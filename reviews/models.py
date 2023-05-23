@@ -1,10 +1,11 @@
 from django.db import models
 from users.models import User
+from movies.models import Movie
 from django.urls import reverse
 
 
 class Review(models.Model):
-    # movie = models.ForeignKey(Movie?, on_delete=models.CASCADE, related_name="movies")
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="movies")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="users")
     content = models.TextField("내용")
     created_at = models.DateTimeField("리뷰생성일", auto_now_add=True)
