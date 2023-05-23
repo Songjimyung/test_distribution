@@ -1,16 +1,8 @@
 from rest_framework import serializers
-from users.models import User, UserProfile
-from .models import User, password_validator, password_pattern, user_name_validator, nickname_validator
+from users.models import User
+from .models import User, password_validator, password_pattern, user_name_validator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-# from posts.serializers import PostSerializer
-# from posts.models import Post
 from django.contrib.auth.hashers import check_password
-
-# from django.utils.http import urlsafe_base64_encode
-# from django.core.mail import EmailMessage
-# from django.utils.encoding import force_bytes
-# from django.urls import reverse
-
 
 
 # 회원가입에 필요한 serializer
@@ -89,100 +81,18 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         
-        # 새로운 사용자의 프로필을 생성하기 위해 UserProfile 모델에서 UserProfile 인스턴스를 생성합니다.
-        UserProfile.objects.create(user=user)
-        
         return validated_data
-
-
-# 회원정보 수정에 필요한 serializer
-class UserUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-
-        fields = ("user_name",)
-        extra_kwargs = {"user_name": {"error_messages": {"required": False, "blank": False,}},}
-
-    def update(self, instance, validated_data):
-        instance.user_name = validated_data.get("user_name", instance.user_name)
-        instance.save()
-
-        return instance
 
 
 # 마이 페이지 serializer
 class MyPageSerializer(serializers.ModelSerializer):
-    email = serializers.SerializerMethodField()
-    user_name = serializers.SerializerMethodField()
-
-    def get_email(self, obj):
-        return obj.user.email
-
-    def get_user_name(self, obj):
-        return obj.user.user_name
-
     class Meta:
-        model = UserProfile
+        model = User
         fields = (
             "id",
-            "user_id",
-            "nickname",
-            "profile_image",
-            "email",
             "user_name",
-            "introduction",
-            "age",
-            "gender",
-            "review_cnt",
-            "followers",
-            "followings",
+            "email",
         )
-
-
-# 마이 페이지 편집 serializer
-class MyPageUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = (
-            "nickname",
-            "profile_image",
-            "introduction",
-            "age",
-            "gender",
-        )
-        extra_kwargs = {
-            "nickname": {
-                "error_messages": {
-                    "required": "닉네임을 입력해주세요.",
-                    "blank": "닉네임을 입력해주세요.",
-                }
-            },
-            "introduction": {
-                "error_messages": {
-                    "required": "자기소개를 입력해주세요.",
-                    "blank": "자기소개를 입력해주세요.",
-                }
-            },
-        }
-
-    def validate(self, data):
-        nickname = data.get("nickname")
-
-        # 닉네임 유효성 검사
-        if nickname_validator(nickname):
-            raise serializers.ValidationError(detail={"nickname": "닉네임은 3자이상 10자 이하로 작성해야하며 특수문자는 포함할 수 없습니다."})
-
-        return data
-
-    def update(self, instance, validated_data):
-        instance.nickname = validated_data.get("nickname", instance.nickname)
-        instance.profile_image = validated_data.get("profile_image", instance.profile_image)
-        instance.introduction = validated_data.get("introduction", instance.introduction)
-        instance.age = validated_data.get("age", instance.age)
-        instance.gender = validated_data.get("gender", instance.gender)
-        instance.save()
-
-        return instance
 
 
 # 비밀번호 변경에 필요한 serializer
@@ -247,6 +157,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['nickname'] = user.user_profile.nickname
+        token['user_name'] = user.user_name
         token["is_admin"] = user.is_admin
         return token
