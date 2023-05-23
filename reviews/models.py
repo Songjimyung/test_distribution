@@ -12,7 +12,7 @@ class Review(models.Model):
     like = models.ManyToManyField(User, related_name="likes")
 
     def get_absolute_url(self):
-        return reverse('review_detail_view', kwargs={"review_id": self.pk})
+        return reverse('review_detail_view', kwargs={"review_id": self.id})
     
     def __str__(self):
         return str(self.content)
