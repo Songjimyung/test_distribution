@@ -11,15 +11,6 @@ class ReviewCreateTest(APITestCase):
     Review 생성이 올바르게 이루어지는지 검증하는 테스트 클래스입니다.
     `setUpTestData` 메서드를 사용하여 테스트 사용자와 리뷰 데이터를 설정합니다.
     .client부분이 classmethod가 아니기 때문에 cls.client.post ..은 에러가 나서 따로 setUp으로 처리합니다.
-
-    테스트 시나리오:
-    - 로그인하지 않은 경우 실패하는 테스트:
-        1. 로그인하지 않은 상태에서 Review 생성 요청을 보냅니다.
-        2. status_code가 401인지 확인하여 인증되지 않아 실패하는지 확인합니다.
-
-    - Review 생성:
-        1. 인증된 사용자로서 Review 생성 요청을 보냅니다.
-        2. status_code가 201인지 확인하여 생성이 성공적으로 이루어졌는지 확인합니다.
     '''
     @classmethod
     def setUpTestData(cls):
@@ -36,11 +27,21 @@ class ReviewCreateTest(APITestCase):
         self.access_token = self.client.post(reverse('token_obtain_pair'), self.user_data).data['access']
 
     def test_fail_if_not_logged_in(self):
+        '''
+        - 로그인하지 않은 경우 실패하는 테스트:
+            1. 로그인하지 않은 상태에서 Review 생성 요청을 보냅니다.
+            2. status_code가 401인지 확인하여 인증되지 않아 실패하는지 확인합니다.
+        '''
         url = reverse("review_view")
         response = self.client.post(url, self.review_data)
         self.assertEqual(response.status_code, 401)
 
     def test_create_review(self):
+        '''
+        - Review 생성:
+            1. 인증된 사용자로서 Review 생성 요청을 보냅니다.
+            2. status_code가 201인지 확인하여 생성이 성공적으로 이루어졌는지 확인합니다.
+        '''
         response = self.client.post(
             path = reverse("review_view"),
             data = self.review_data,
@@ -53,16 +54,9 @@ class ReviewReadTest(APITestCase):
     '''
     Review GET 요청이 올바르게 이루어지는지 검증하는 테스트 클래스입니다.
 
-    테스트 데이터는 `setUpTestData` 메서드를 사용하여 테스트 사용자와 리뷰 데이터를 설정합니다.
+    데이터는 `setUpTestData` 메서드를 사용하여 테스트 사용자와 리뷰 데이터를 설정합니다.
     faker 패키지를 사용하여 10개의 더미 리뷰 데이터를 생성하고, 생성된 10개의 리뷰에 대해
     response와 serializer가 일치하는지 테스트합니다.
-
-    테스트 시나리오:
-    - 리뷰 요청:
-        1. 10개의 더미 리뷰 데이터를 생성합니다.
-        2. 생성된 리뷰 데이터에 대해 GET 요청을 보냅니다.
-        3. response와 리뷰 객체의 serializer가 일치하는지 확인합니다.
-           (response와 serializer의 각 key - value가 일치하는지 확인합니다.)
 
     email_faker 참고코드 : https://gist.github.com/isaqueprofeta/83b8bc9824b55b63012fa975e7264c25
     '''
@@ -93,6 +87,13 @@ class ReviewReadTest(APITestCase):
             cls.reviews.append(Review.objects.create(content=cls.faker.sentence(), user=cls.user))
 
     def test_get_review(self):
+        '''
+        - 리뷰 요청:
+            1. 10개의 더미 리뷰 데이터를 생성합니다.
+            2. 생성된 리뷰 데이터에 대해 GET 요청을 보냅니다.
+            3. response와 리뷰 객체의 serializer가 일치하는지 확인합니다.
+            (response와 serializer의 각 key - value가 일치하는지 확인합니다.)
+        '''
         for i, review in enumerate(self.reviews):
             url = reverse("review_view")
             response = self.client.get(url)
@@ -109,22 +110,6 @@ class ReviewDetailTest(APITestCase):
 
     Review Model의 `get_absolute_url` 메서드를 통해 <int:review_id>/ 값이 변경되더라도
     리뷰가 올바르게 수정 및 삭제되는지 확인합니다.
-
-
-    테스트 시나리오:
-    - 리뷰 수정:
-        1. 새로운 리뷰를 생성합니다.
-        2. 주어진 내용을 사용하여 리뷰 객체를 가져옵니다.
-        3. `get_absolute_url` 메서드를 호출하여 리뷰 URL을 얻습니다.
-        4. 수정된 리뷰 데이터를 포함하여 리뷰 URL로 PUT 요청을 보냅니다.
-        5. status_code가 200인지 확인하여 수정이 성공적으로 이루어졌는지 확인합니다.
-
-    - 리뷰 삭제:
-        1. 새로운 리뷰를 생성합니다.
-        2. 주어진 내용을 사용하여 리뷰 객체를 가져옵니다.
-        3. `get_absolute_url` 메서드를 호출하여 리뷰 URL을 얻습니다.
-        4. 리뷰 URL로 DELETE 요청을 보냅니다.
-        5. status_code가 204인지 확인하여 삭제가 성공적으로 이루어졌는지 확인합니다.
     '''
     @classmethod
     def setUpTestData(cls):
@@ -142,7 +127,15 @@ class ReviewDetailTest(APITestCase):
         self.access_token = self.client.post(reverse('token_obtain_pair'), self.user_data).data['access']
 
     def test_put_review(self):
-        # 리뷰 생성 후
+        '''
+        - 리뷰 수정:
+            1. 새로운 리뷰를 생성합니다.
+            2. 주어진 내용을 사용하여 리뷰 객체를 가져옵니다.
+            3. `get_absolute_url` 메서드를 호출하여 리뷰 URL을 얻습니다.
+            4. 수정된 리뷰 데이터를 포함하여 리뷰 URL로 PUT 요청을 보냅니다.
+            5. status_code가 200인지 확인하여 수정이 성공적으로 이루어졌는지 확인합니다.
+        '''
+        # 리뷰 생성
         response = self.client.post(
             path=reverse("review_view"),
             data=self.review_data,
@@ -161,7 +154,15 @@ class ReviewDetailTest(APITestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_delete_review(self):
-        # 리뷰 생성 후
+        '''
+        - 리뷰 삭제:
+            1. 새로운 리뷰를 생성합니다.
+            2. 주어진 내용을 사용하여 리뷰 객체를 가져옵니다.
+            3. `get_absolute_url` 메서드를 호출하여 리뷰 URL을 얻습니다.
+            4. 리뷰 URL로 DELETE 요청을 보냅니다.
+            5. status_code가 204인지 확인하여 삭제가 성공적으로 이루어졌는지 확인합니다.
+        '''
+        # 리뷰 생성
         response = self.client.post(
             path=reverse("review_view"),
             data=self.review_data,
