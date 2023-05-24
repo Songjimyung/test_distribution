@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from .models import Movie, Genre
 from .serializers import MovieSerializer
@@ -71,3 +72,10 @@ class MovieListView(APIView):
             
         return Response(serialized_data)
           
+
+# 영화 상세 페이지 view
+class MovieDetailView(APIView):
+    def get(self, request, movie_id):
+        movie = get_object_or_404(Movie, pk=movie_id)
+        serializer = MovieSerializer(movie)
+        return Response(serializer.data)
