@@ -35,6 +35,7 @@ AIA6_BackEnd
     - 마이페이지  
   
 - 영화
+    - TMDB API를 사용하여 간략한 영화정보에 후기를 달 수 있는 게시판 기능
     - 후기 CRUD (TextField 짧게 한줄평 느낌으로!)
     - 좋아요 기능
 
@@ -72,6 +73,7 @@ AI가 구현되는 과정 상세히 적어보기
 5. tmdb api 이용한 프로젝트라고 소개글 추가
 6. 개발 끝난 후, print문이나 쓸데없는 주석, 사용되지 않는 코드 등의 legacy code 삭제시간 갖기
 7. review모델 평점 필드(rating)가 없다✅
-8. likes 테스트코드 -ing
+8. likes 테스트코드✅
 9. movie admin 등록✅
 10. review에서 movie_id 활용 로직 구체화✅
+11. 계정 아이디 validation 먹통현상
