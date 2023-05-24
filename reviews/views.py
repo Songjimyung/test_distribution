@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.generics import get_object_or_404
 from reviews.models import Review
+from movies.models import Movie
 from reviews.serializers import ReviewSerializer, ReviewCreateSerializer
 
 
@@ -16,10 +17,11 @@ class ReviewView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     # 후기 작성하기
-    def post(self, request):
+    def post(self, request, movie_id):
+        movie = get_object_or_404(Movie, pk=movie_id)
         serializer = ReviewCreateSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user)
+            serializer.save(movie=movie, user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

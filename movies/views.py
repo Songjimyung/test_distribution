@@ -75,7 +75,7 @@ class MovieListView(APIView):
 
 # 영화 상세 페이지 view
 class MovieDetailView(APIView):
-    def get(self, request, movie_title):
-        movie = get_object_or_404(Movie, title=movie_title)
+    def get(self, request, movie_id):
+        movie = get_object_or_404(Movie, pk=movie_id)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
