@@ -22,7 +22,7 @@ class MovieTest(APITestCase):
         4. response.data가 10개인지 확인합니다. (view에서 random 10개를 가져오고 있습니다.)
         """
         response = self.client.get(
-            path=reverse("main"), # index page로 변경되면 url name 변경가능성 있음
+            path=reverse("main"),
             params = {
                     "api_key": "dfffda402827c71395fe46139633c254",
                     "language": "ko-KR"

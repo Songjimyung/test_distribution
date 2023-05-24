@@ -25,10 +25,13 @@ class Review(models.Model):
     created_at = models.DateTimeField("리뷰생성일", auto_now_add=True)
     updated_at = models.DateTimeField("리뷰변경일", auto_now=True)
     like = models.ManyToManyField(User, related_name="likes", blank=True)
-
-    def get_absolute_url(self):
-        return reverse('review_detail_view', kwargs={"review_id": self.id})
     
+    def get_absolute_url(self):
+        if self.id:
+            return reverse('review_detail_view', kwargs={"movie_id": self.movie.id, "review_id": self.id})
+        else:
+            return reverse('review_view', kwargs={"movie_id": self.movie.id})
+
     def __str__(self):
         return str(self.content)
     
