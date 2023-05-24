@@ -73,5 +73,5 @@ AI가 구현되는 과정 상세히 적어보기
 6. 개발 끝난 후, print문이나 쓸데없는 주석, 사용되지 않는 코드 등의 legacy code 삭제시간 갖기
 7. review모델 평점 필드(rating)가 없다✅
 8. likes 테스트코드 -ing
-9. movie admin 등록
-10. review에서 movie_id 활용 로직 구체화
+9. movie admin 등록✅
+10. review에서 movie_id 활용 로직 구체화✅

@@ -16,18 +16,17 @@ class MovieTest(APITestCase):
         Movie API의 GET 요청을 테스트합니다.
 
         Movie GET API:
-        1. `detail` 경로에 대한 GET 요청을 보냅니다.
+        1. `main` 경로에 대한 GET 요청을 보냅니다.
         2. 요청에는 "api_key"와 "language"라는 파라미터를 포함시킵니다.
         3. status_code가 200인지 확인합니다.
         4. response.data가 10개인지 확인합니다. (view에서 random 10개를 가져오고 있습니다.)
         """
         response = self.client.get(
-            path=reverse("detail"), # index page로 변경되면 url name 변경가능성 있음
+            path=reverse("main"), # index page로 변경되면 url name 변경가능성 있음
             params = {
                     "api_key": "dfffda402827c71395fe46139633c254",
                     "language": "ko-KR"
                  }
             )
-        print(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 10)
