@@ -23,10 +23,10 @@ class ReviewDisplay(admin.ModelAdmin):
         'rating',
         'like',
     ]
-    readonly_fields = [
+    readonly_fields = (
         'created_at',
         'updated_at',
-    ]
+    )
     list_filter = [
         'movie',
         'user',

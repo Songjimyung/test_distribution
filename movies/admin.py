@@ -12,14 +12,14 @@ class MovieDisplay(admin.ModelAdmin):
         'vote_average',
         'poster_path',
     ]
-    readonly_fields = [
+    readonly_fields = (
         'title',
         'release_date',
         'overview',
         'vote_average',
         'genres',
         'poster_path',
-    ]
+    )
     list_filter = [
         'title',
         'release_date',

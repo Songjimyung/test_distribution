@@ -24,7 +24,7 @@ class Review(models.Model):
     rating = models.FloatField("평점", choices=RATING_CHOICES)
     created_at = models.DateTimeField("리뷰생성일", auto_now_add=True)
     updated_at = models.DateTimeField("리뷰변경일", auto_now=True)
-    like = models.ManyToManyField(User, related_name="likes")
+    like = models.ManyToManyField(User, related_name="likes", blank=True)
 
     def get_absolute_url(self):
         return reverse('review_detail_view', kwargs={"review_id": self.id})
