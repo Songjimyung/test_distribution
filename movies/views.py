@@ -6,12 +6,14 @@ from .serializers import MovieSerializer
 from rest_framework.views import APIView
 import requests, random, csv, os
 from datetime import datetime
-
+from .movies_function import save_movies_to_csv
 
 
 # Create your views here.
 
 class MovieListView(APIView):
+    csv_file_path = "movie_data.csv"
+    save_movies_to_csv(csv_file_path)
     def get(self, request):
         genres_url = "https://api.themoviedb.org/3/genre/movie/list"
         params = {
