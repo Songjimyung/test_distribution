@@ -1,7 +1,7 @@
 import csv
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
+import numpy as np
 
     # 오버뷰 비슷한 5개의 영화
 def similar_overview(csv_file_path, target_movie_index, top_n=5):
@@ -26,7 +26,7 @@ def similar_overview(csv_file_path, target_movie_index, top_n=5):
     # print('코사인유사도', cosine_similarity(target_vector, tfidf_matrix))
     similar_movie = cosine_similarity(target_vector, tfidf_matrix)[0]
     
-    sorted_similar = similar_movie.argsort()[::-1]
+    sorted_similar = np.argsort(similar_movie)[::-1]
     # print('행렬소트',sorted_similar)
     similar_movies = []
     for index in sorted_similar[1:top_n+1]:
@@ -42,3 +42,5 @@ def similar_overview(csv_file_path, target_movie_index, top_n=5):
 
     return similar_movies
 
+similar_overview('movie_data.csv', 3 )
+print(similar_overview)
