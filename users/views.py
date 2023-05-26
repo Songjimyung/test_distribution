@@ -61,7 +61,7 @@ class ChangePasswordView(APIView):
 
 
 class UserActivate(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, uidb64, token):
         try:
