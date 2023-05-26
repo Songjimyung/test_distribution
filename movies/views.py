@@ -6,12 +6,14 @@ from .serializers import MovieSerializer
 from rest_framework.views import APIView
 import requests, random, csv, os
 from datetime import datetime
-
-
+from .movies_csv import save_movies_to_csv
+from rest_framework.permissions import IsAdminUser
+from .movies_ai import similar_overview
 
 # Create your views here.
 
 class MovieListView(APIView):
+    
     def get(self, request):
         genres_url = "https://api.themoviedb.org/3/genre/movie/list"
         params = {
@@ -102,3 +104,37 @@ class MovieDetailView(APIView):
         movie = get_object_or_404(Movie, pk=movie_id)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
+#csv파일 생성 view
+class SaveMoviesView(APIView):
+    permission_classes = [IsAdminUser]
+    
+    def post(self, request):
+        csv_file_path = "movie_data.csv"
+        save_movies_to_csv(csv_file_path)
+        return Response("CSV파일 저장완료")
+    
+#비슷한 영화 추천 view
+class SimilarMoviesView(APIView):
+    
+    def post(self, request):
+        csv_file_path = "movie_data.csv"
+        target_movie_id = request.data.get('target_movie_id')
+        if target_movie_id is None:
+            return Response("올바른 target_movie_id 값을 제공해주세요")
+        target_movie_id = int(target_movie_id)
+        target_movie_index = self.find_movie_index(csv_file_path, target_movie_id)
+        
+        if target_movie_index is None:
+            return Response("비슷한 영화가 없네요")
+        
+        similar_movies = similar_overview(csv_file_path, target_movie_index)
+             
+        return Response(similar_movies)
+    # 선택한 영화의 ID값을 가져와 csv파일에서 검색 후 인덱스 값으로 변환
+    def find_movie_index(self, csv_file_path, target_movie_id):
+        with open(csv_file_path, "r", newline="", encoding="utf-8") as csv_file:
+            reader = csv.DictReader(csv_file)
+            for index, row in enumerate(reader):
+                if row['id'] == str(target_movie_id):
+                    return index
+        return None
