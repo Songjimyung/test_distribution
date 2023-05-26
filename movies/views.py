@@ -32,7 +32,7 @@ class MovieListView(APIView):
         # 영화 정보 가져오기
         movies_url = "https://api.themoviedb.org/3/movie/popular"
         movies_data = []
-        for page in range(1, 201):
+        for page in range(1, 20):
             params = {
                     "api_key": "dfffda402827c71395fe46139633c254",
                     "language": "ko-KR",
@@ -97,6 +97,7 @@ class MovieListView(APIView):
                 
         return Response(serialized_data)
           
+
 
 # 영화 상세 페이지 view
 class MovieDetailView(APIView):
