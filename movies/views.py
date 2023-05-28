@@ -32,7 +32,7 @@ class MovieListView(APIView):
         # 영화 정보 가져오기
         movies_url = "https://api.themoviedb.org/3/movie/popular"
         movies_data = []
-        for page in range(1, 201):
+        for page in range(1, 11):
             params = {
                     "api_key": "dfffda402827c71395fe46139633c254",
                     "language": "ko-KR",
@@ -128,7 +128,7 @@ class SimilarMoviesView(APIView):
             return Response("비슷한 영화가 없네요")
         
         similar_movies = similar_overview(csv_file_path, target_movie_index)
-             
+
         return Response(similar_movies)
     # 선택한 영화의 ID값을 가져와 csv파일에서 검색 후 인덱스 값으로 변환
     def find_movie_index(self, csv_file_path, target_movie_id):
