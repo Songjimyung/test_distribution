@@ -36,7 +36,7 @@ class UserDetailView(APIView):
         if request.user.email == user.email:
             user.withdraw = True
             user.withdraw_at = timezone.now()
-            user.is_active = True
+            user.is_active = False
             user.save()
             return Response({"message": "사용자 계정이 비활성화 되었습니다!"}, status=status.HTTP_204_NO_CONTENT)
         else:
@@ -59,7 +59,7 @@ class ChangePasswordView(APIView):
         else:
             return Response("권한이 없습니다", status=status.HTTP_403_FORBIDDEN)
 
-
+# 이메일 인증관련
 class UserActivate(APIView):
     permission_classes = [permissions.AllowAny]
 
