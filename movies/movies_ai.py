@@ -1,7 +1,7 @@
 import csv
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
+import numpy as np
 
     # 오버뷰 비슷한 5개의 영화
 def similar_overview(csv_file_path, target_movie_index, top_n=5):
@@ -26,22 +26,21 @@ def similar_overview(csv_file_path, target_movie_index, top_n=5):
     # print('코사인유사도', cosine_similarity(target_vector, tfidf_matrix))
     similar_movie = cosine_similarity(target_vector, tfidf_matrix)[0]
     
-    sorted_similar = similar_movie.argsort()[::-1]
+    sorted_similar = np.argsort(similar_movie)[::-1]
     # print('행렬소트',sorted_similar)
     similar_movies = []
     for index in sorted_similar[1:top_n+1]:
         movie = movie_data[index]
         if movie['poster_path']is not None:
-            # *변경된 부분 입니다.*
             poster_path = "https://image.tmdb.org/t/p/w500/" + movie['poster_path']
         else:
             poster_path = None
         similar_movies.append({
+            'id': movie['id'],
             'title': movie['title'],
             'overview': movie['overview'],
             'release_date': movie['release_date'],
             'vote_average': movie['vote_average'],
-            # *변경된 부분 입니다.*
             'poster_path': poster_path,
             'genre_ids': movie['genre_ids']
         })
