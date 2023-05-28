@@ -14,7 +14,7 @@ class UserSignupTest(APITestCase):
             2. 생성된 사용자 데이터로 POST 요청을 보냅니다.
             3. status_code 201인지 확인하여 회원가입이 성공적으로 이루어졌는지 확인합니다.
         '''
-        url = reverse("sign_up")
+        url = reverse("user:sign_up")
         user_data = {
             "user_name":"test1234",
             "email":"test@testuser.com",
@@ -34,7 +34,7 @@ class UserSignupTest(APITestCase):
             3. 동일한 사용자 ID를 가진 두 번째 사용자 데이터를 생성하여 POST 요청을 보냅니다.
             4. status_code 400인지 확인하여 회원가입이 실패하는지 확인합니다.
         '''
-        url = reverse("sign_up")
+        url = reverse("user:sign_up")
         user_data1 = {
             "user_name":"test1234",
             "email":"test@testuser.com",
@@ -61,7 +61,7 @@ class UserSignupTest(APITestCase):
             3. 다른 사용자 ID를 가진 두 번째 사용자 데이터를 생성하여 POST 요청을 보냅니다.
             4. status_code 400인지 확인하여 회원가입이 실패하는지 확인합니다.
         '''
-        url = reverse("sign_up")
+        url = reverse("user:sign_up")
         user_data1 = {
             "user_name":"test1234",
             "email":"test@testuser.com",
