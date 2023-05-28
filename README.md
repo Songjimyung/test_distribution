@@ -6,8 +6,7 @@
 
 DB의 랜덤한 영화들 중 6개를 랜덤으로 보여줍니다. 사용자는 6개의 영화 중 마음에 드는 영화가 없다면 '다시검색'을 통해 영화를 다시 뽑을 수 있습니다. AI는 사용자가 선택한 영화를 기준으로 줄거리가 비슷한 영화를 코사인 유사도(Cosine similarity)를 사용하여 새로운 영화를 추천해줍니다.
 
-![photo-1485846234645-a62644f84728](https://github.com/nueeng/AIA6_BackEnd/assets/127704498/3122696a-1247-442b-9f4b-4bf357419313)
-웹페이지 이미지 들어갈 예정  
+![README](https://github.com/nueeng/AIA6_FrontEnd/assets/127704498/536ffe64-6d51-4e71-b832-8ed0f0379662)
 
 [Frontend Repository](https://github.com/nueeng/AIA6_FrontEnd)  
 
