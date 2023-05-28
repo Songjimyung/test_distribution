@@ -4,20 +4,18 @@ from rest_framework.response import Response
 from .models import Movie, Genre
 from .serializers import MovieSerializer
 from rest_framework.views import APIView
-import requests, random, csv, os
+import requests, random, csv, os, json
 from datetime import datetime
 from .movies_csv import save_movies_to_csv
 from rest_framework.permissions import IsAdminUser
 from .movies_ai import similar_overview
 from rest_framework.pagination import PageNumberPagination
-
-
+from urllib.parse import urlparse, parse_qs
 
 # Create your views here.
-
-class MovieListView(APIView):
-    
-    def get(self, request):
+#api에서 무비 데이터 가져오기
+class MovieDataFetcher:
+    def fetch_movies_data(self):
         genres_url = "https://api.themoviedb.org/3/genre/movie/list"
         params = {
                     "api_key": "dfffda402827c71395fe46139633c254",
@@ -34,31 +32,105 @@ class MovieListView(APIView):
             Genre.objects.get_or_create(id=genre['id'], defaults={'name': genre['name']})
 
         # 영화 정보 가져오기
-        print("영화정보 가져오는중 ...")
+        print("영화정보 가져오는중 ...")        
         movies_url = "https://api.themoviedb.org/3/movie/popular"
         movies_data = []
-        for page in range(1, 20):
+        for page in range(1, 201):
             params = {
-                    "api_key": "dfffda402827c71395fe46139633c254",
-                    "language": "ko-KR",
-                    "page": page
+                "api_key": "dfffda402827c71395fe46139633c254",
+                "language": "ko-KR",
+                "page": page
             }
-
             response = requests.get(movies_url, params=params)
             if response.status_code == 200:
-                new_data = response.json().get('results', [])        
+                new_data = response.json().get('results', [])
                 movies_data.append(new_data)
-        print('movies_data')
-        serialized_data = []
+        return movies_data
+#무비 출력뷰    
+# class MovieListView(APIView):
+    
+#     def get(self, request):
+#         movies = Movie.objects.all()  
+#         serialized_data = []
         
+#         # 영화 정보 출력
+#         for movie_data in movies:
+#             genre_ids = movie_data.genres.all().values_list('id', flat=True)
+#             genres = Genre.objects.filter(id__in=genre_ids)
+#             genre_names = [genre.name for genre in genres]
+            
+                                                           
+#             movie_json = {
+#                 "id": movie_data.id,
+#                 "title": movie_data.title,
+#                 "overview": movie_data.overview,
+#                 "release_date" : movie_data.release_date,
+#                 "vote_average" : movie_data.vote_average,
+#                 "genres" : genre_names,
+#                 "poster_path" : movie_data.poster_path
+#                     }
+                    
+#             serialized_data.append(movie_json)
+                
+#         return Response(serialized_data)
+class MovieListView(APIView):
+    
+    def get(self,request):
+        movie_data = MovieDataFetcher()
+        movies_data = movie_data.fetch_movies_data()
+        serialized_data = []
+        for list_data in movies_data:
+            for data in list_data:
+                genre_ids = data.get('genre_ids')
+                genres = Genre.objects.filter(id__in =genre_ids)
+                genre_names = [genre.name for genre in genres]
+                vote_average = data.get('vote_average', None)
+                release_date_str = data.get('release_date', None)
+                if data['poster_path']is not None:
+                    poster_path = "https://image.tmdb.org/t/p/w500/" + data['poster_path']
+                else:
+                    poster_path = None
+                if release_date_str:
+                    try:
+                        release_date = datetime.strptime(release_date_str, '%Y-%m-%d').date()
+                    except ValueError:
+                        release_date = None
+                movie_json = {
+                    "id": data['id'],
+                    "title": data['title'],
+                    "overview": data['overview'],
+                    "release_date": release_date,
+                    "vote_average": vote_average,
+                    "genres": genre_names,
+                    "poster_path": poster_path
+                }
+                
+                serialized_data.append(movie_json)
+            
+        return Response(serialized_data)
 
-        # 영화 정보 저장
+
+
+#csv파일 생성 및 모델에 저장 view
+class SaveMoviesView(APIView):
+    permission_classes = [IsAdminUser]
+    
+    def post(self, request):
+        movie_data = MovieDataFetcher()
+        movies_data = movie_data.fetch_movies_data()
+        self.save_movie_data(movies_data)
+        csv_file_path = "movie_data.csv"
+        save_movies_to_csv(csv_file_path)
+        
+        return Response("CSV파일 및 무비모델 저장완료")
+    
+    def save_movie_data(self, movies_data):
         for select_data in movies_data:
             for movie_data in select_data:
                 if movie_data.get('adult') == False:
-                    genre_ids = movie_data['genre_ids']
-                    genres = Genre.objects.filter(id__in=genre_ids)
-                    genre_names = [genre.name for genre in genres]
+                    # genre_ids = movie_data['genre_ids']
+                    # genres = Genre.objects.filter(id__in=genre_ids)
+                    # genre_names = [genre.name for genre in genres]
                     #포스터 경로가 없는 경우 None으로 처리.
                     if movie_data['poster_path']is not None:
                         poster_path = "https://image.tmdb.org/t/p/w500/" + movie_data['poster_path']
@@ -79,49 +151,20 @@ class MovieListView(APIView):
                         overview=movie_data['overview'],
                         release_date=release_date,
                         vote_average = vote_average,
-                        poster_path=poster_path
+                        poster_path=poster_path,
+                        genres = movie_data['genre_ids']
                     )
                     movie.save()
-                    movie.genres.set(genres)
-                    # 영화 정보 출력
-                    movie_data['genre_ids'] = genre_names
-                    movie_data['poster_path']=poster_path
                     
-                    
-
-                    movie_json = {
-                        "id": movie_data['id'],
-                        "title": movie_data['title'],
-                        "overview": movie_data['overview'],
-                        "release_date" : release_date,
-                        "vote_average" : vote_average,
-                        "genres" : movie_data['genre_ids'],
-                        "poster_path" : movie_data['poster_path']
-                    }
-                    
-                    serialized_data.append(movie_json)
-                
-        return Response(serialized_data)
-
-
 
 # 영화 상세 페이지 view
 class MovieDetailView(APIView):
     def get(self, request, movie_id):
         movie = get_object_or_404(Movie, pk=movie_id)
         serializer = MovieSerializer(movie)
-        return Response(serializer.data)
-    
+        return Response(serializer.data)  
 
-#csv파일 생성 view
-class SaveMoviesView(APIView):
-    permission_classes = [IsAdminUser]
-    
-    def post(self, request):
-        csv_file_path = "movie_data.csv"
-        save_movies_to_csv(csv_file_path)
-        return Response("CSV파일 저장완료")
-    
+  
     
 #비슷한 영화 추천 view
 class SimilarMoviesView(APIView):
@@ -150,7 +193,7 @@ class SimilarMoviesView(APIView):
         return None
 
 
-class MovieListPaginatedView(MovieListView):
+# class MovieListPaginatedView(MovieListView):
     '''
     MovieListView의 Movie API GET을 상속받아 Pagination을 orverriding 합니다.
     그 후, pagination 인스턴스를 생성하여 시리얼라이즈된 데이터를 pagination 처리하고, pagination된 response을 반환합니다.
@@ -178,12 +221,61 @@ class MovieListPaginatedView(MovieListView):
         ]
     }
     '''
-    pagination_class = PageNumberPagination
+    # pagination_class = PageNumberPagination
+
+    # def get(self, request):
+    #     inherited_instance = super().get(request)
+    #     serialized_data = inherited_instance.data
+    #     pagination_instance = self.pagination_class()
+    #     paginated_data = pagination_instance.paginate_queryset(serialized_data, request)
+    #     pagination_instance.count = len(serialized_data) # 카운트 안주니 오류가 (count = 전체 get해오는 데이터 개수)
+    #     return pagination_instance.get_paginated_response(paginated_data)
+    
+
+
+class MovieListPaginatedView(APIView):
 
     def get(self, request):
-        inherited_instance = super().get(request)
-        serialized_data = inherited_instance.data
-        pagination_instance = self.pagination_class()
-        paginated_data = pagination_instance.paginate_queryset(serialized_data, request)
-        pagination_instance.count = len(serialized_data) # 카운트 안주니 오류가 (count = 전체 get해오는 데이터 개수)
-        return pagination_instance.get_paginated_response(paginated_data)
+        movies_url = "https://api.themoviedb.org/3/movie/popular"
+        parsed_url = urlparse(request.build_absolute_uri())       
+        page = parse_qs(parsed_url.query).get('page', [1])[0] # URL의 쿼리 파라미터에서 'page' 값을 추출       
+        params = {
+                "api_key": "dfffda402827c71395fe46139633c254",
+                "language": "ko-KR",
+                "page": page
+            }
+        response = requests.get(movies_url, params=params)
+        request_data =[]
+        if response.status_code == 200:
+            movies_data = response.json().get('results')
+            request_data.append(movies_data)
+        serialized_data = []
+        for data in movies_data:
+
+                genre_ids = data.get('genre_ids')
+                genres = Genre.objects.filter(id__in =genre_ids)
+                genre_names = [genre.name for genre in genres]
+                vote_average = data.get('vote_average', None)
+                release_date_str = data.get('release_date', None)
+                if data['poster_path']is not None:
+                    poster_path = "https://image.tmdb.org/t/p/w500/" + data['poster_path']
+                else:
+                    poster_path = None
+                if release_date_str:
+                    try:
+                        release_date = datetime.strptime(release_date_str, '%Y-%m-%d').date()
+                    except ValueError:
+                        release_date = None
+                movie_json = {
+                    "id": data['id'],
+                    "title": data['title'],
+                    "overview": data['overview'],
+                    "release_date": release_date,
+                    "vote_average": vote_average,
+                    "genres": genre_names,
+                    "poster_path": poster_path
+                }
+                
+                serialized_data.append(movie_json)
+            
+        return Response(serialized_data)
