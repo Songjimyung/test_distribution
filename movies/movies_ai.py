@@ -17,17 +17,13 @@ def similar_overview(csv_file_path, target_movie_index, top_n=5):
     overviews = [movie['overview'] for movie in movie_data]
     #오버뷰의 Tf-idf 벡터 행렬로 변환.
     tfidf_matrix = TfidfVectorizer().fit_transform(overviews)
-    # print('오버뷰변환', tfidf_matrix)
     
     #비교할 특정 영화의 Tf-idf 벡터
     target_vector = tfidf_matrix[target_movie_index]
-    # print('타겟', target_vector)
     
-    # print('코사인유사도', cosine_similarity(target_vector, tfidf_matrix))
     similar_movie = cosine_similarity(target_vector, tfidf_matrix)[0]
     
     sorted_similar = np.argsort(similar_movie)[::-1]
-    # print('행렬소트',sorted_similar)
     similar_movies = []
     for index in sorted_similar[1:top_n+1]:
         movie = movie_data[index]
@@ -46,4 +42,3 @@ def similar_overview(csv_file_path, target_movie_index, top_n=5):
         })
 
     return similar_movies
-
