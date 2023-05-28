@@ -28,13 +28,11 @@ class MovieListView(APIView):
         genres_data = response.json()
 
         # 장르 정보 Genre 모델에 저장
-        print("장르 저장중 ...")
         genres = genres_data['genres']
         for genre in genres:
             Genre.objects.get_or_create(id=genre['id'], defaults={'name': genre['name']})
 
         # 영화 정보 가져오기
-        print("영화정보 가져오는중 ...")
         movies_url = "https://api.themoviedb.org/3/movie/popular"
         movies_data = []
         for page in range(1, 11):
@@ -48,14 +46,12 @@ class MovieListView(APIView):
             if response.status_code == 200:
                 new_data = response.json().get('results', [])        
                 movies_data.append(new_data)
-        print('movies_data')
         serialized_data = []
         
 
         # 영화 정보 저장
         for select_data in movies_data:
             for movie_data in select_data:
-                print("영화정보 저장중 ...")
                 genre_ids = movie_data['genre_ids']
                 genres = Genre.objects.filter(id__in=genre_ids)
                 genre_names = [genre.name for genre in genres]

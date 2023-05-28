@@ -68,4 +68,3 @@ def save_movies_to_csv(file_path):
                 if movie['id'] not in existing_data:
                     writer.writerow(movie)
 
-    print("csv파일 저장완료.")
