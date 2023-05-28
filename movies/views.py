@@ -9,6 +9,9 @@ from datetime import datetime
 from .movies_csv import save_movies_to_csv
 from rest_framework.permissions import IsAdminUser
 from .movies_ai import similar_overview
+from rest_framework.pagination import PageNumberPagination
+
+
 
 # Create your views here.
 
@@ -25,14 +28,16 @@ class MovieListView(APIView):
         genres_data = response.json()
 
         # 장르 정보 Genre 모델에 저장
+        print("장르 저장중 ...")
         genres = genres_data['genres']
         for genre in genres:
             Genre.objects.get_or_create(id=genre['id'], defaults={'name': genre['name']})
 
         # 영화 정보 가져오기
+        print("영화정보 가져오는중 ...")
         movies_url = "https://api.themoviedb.org/3/movie/popular"
         movies_data = []
-        for page in range(1, 201):
+        for page in range(1, 11):
             params = {
                     "api_key": "dfffda402827c71395fe46139633c254",
                     "language": "ko-KR",
@@ -50,6 +55,7 @@ class MovieListView(APIView):
         # 영화 정보 저장
         for select_data in movies_data:
             for movie_data in select_data:
+                print("영화정보 저장중 ...")
                 genre_ids = movie_data['genre_ids']
                 genres = Genre.objects.filter(id__in=genre_ids)
                 genre_names = [genre.name for genre in genres]
@@ -96,7 +102,7 @@ class MovieListView(APIView):
                 serialized_data.append(movie_json)
                 
         return Response(serialized_data)
-          
+
 
 # 영화 상세 페이지 view
 class MovieDetailView(APIView):
@@ -104,6 +110,8 @@ class MovieDetailView(APIView):
         movie = get_object_or_404(Movie, pk=movie_id)
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
+    
+
 #csv파일 생성 view
 class SaveMoviesView(APIView):
     permission_classes = [IsAdminUser]
@@ -112,6 +120,7 @@ class SaveMoviesView(APIView):
         csv_file_path = "movie_data.csv"
         save_movies_to_csv(csv_file_path)
         return Response("CSV파일 저장완료")
+    
     
 #비슷한 영화 추천 view
 class SimilarMoviesView(APIView):
@@ -138,3 +147,42 @@ class SimilarMoviesView(APIView):
                 if row['id'] == str(target_movie_id):
                     return index
         return None
+
+
+class MovieListPaginatedView(MovieListView):
+    '''
+    MovieListView의 Movie API GET을 상속받아 Pagination을 orverriding 합니다.
+    그 후, pagination 인스턴스를 생성하여 시리얼라이즈된 데이터를 pagination 처리하고, pagination된 response을 반환합니다.
+    pagination_class를 PageNumberPagination로 설정해 페이지 기준 parameter로 처리합니다.
+    
+    # API 요청 예시
+    GET /movie/?page=2
+
+    # API 응답 예시
+    {
+        "count": 1000, # 불러오는 영화의 수
+        "next": "/movies/paginated/?page=2",
+        "previous": null,
+        "results": [
+            {
+                "id": 1,
+                "title": "영화 제목",
+                "overview": "영화 개요",
+                "release_date": "2023-05-28",
+                "vote_average": 8.5,
+                "genres": ["드라마", "로맨스"],
+                "poster_path": "http://example.com/poster.jpg"
+            },
+            // 페이지네이션된 영화 목록
+        ]
+    }
+    '''
+    pagination_class = PageNumberPagination
+
+    def get(self, request):
+        inherited_instance = super().get(request)
+        serialized_data = inherited_instance.data
+        pagination_instance = self.pagination_class()
+        paginated_data = pagination_instance.paginate_queryset(serialized_data, request)
+        pagination_instance.count = len(serialized_data) # 카운트 안주니 오류가 (count = 전체 get해오는 데이터 개수)
+        return pagination_instance.get_paginated_response(paginated_data)
