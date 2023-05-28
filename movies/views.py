@@ -50,50 +50,51 @@ class MovieListView(APIView):
         # 영화 정보 저장
         for select_data in movies_data:
             for movie_data in select_data:
-                genre_ids = movie_data['genre_ids']
-                genres = Genre.objects.filter(id__in=genre_ids)
-                genre_names = [genre.name for genre in genres]
-                #포스터 경로가 없는 경우 None으로 처리.
-                if movie_data['poster_path']is not None:
-                    poster_path = "https://image.tmdb.org/t/p/w500/" + movie_data['poster_path']
-                else:
-                    poster_path = None
-                vote_average = movie_data.get('vote_average', None)
-                release_date_str = movie_data.get('release_date', None)
-                # #release_date 값이 '' 인 경우 형식오류.. None으로 반환하게 했으나 ''값은 날짜형식이 아니란 오류. 한번 더 처리해서 강제로 None값을 갖게 함.
-                if release_date_str:
-                    try:
-                        release_date = datetime.strptime(release_date_str, '%Y-%m-%d').date()
-                    except ValueError:
-                        release_date = None
+                if movie_data.get('adult') == False:
+                    genre_ids = movie_data['genre_ids']
+                    genres = Genre.objects.filter(id__in=genre_ids)
+                    genre_names = [genre.name for genre in genres]
+                    #포스터 경로가 없는 경우 None으로 처리.
+                    if movie_data['poster_path']is not None:
+                        poster_path = "https://image.tmdb.org/t/p/w500/" + movie_data['poster_path']
+                    else:
+                        poster_path = None
+                    vote_average = movie_data.get('vote_average', None)
+                    release_date_str = movie_data.get('release_date', None)
+                    # #release_date 값이 '' 인 경우 형식오류.. None으로 반환하게 했으나 ''값은 날짜형식이 아니란 오류. 한번 더 처리해서 강제로 None값을 갖게 함.
+                    if release_date_str:
+                        try:
+                            release_date = datetime.strptime(release_date_str, '%Y-%m-%d').date()
+                        except ValueError:
+                            release_date = None
 
-                movie = Movie(
-                    id=movie_data['id'],
-                    title=movie_data['title'],
-                    overview=movie_data['overview'],
-                    release_date=release_date,
-                    vote_average = vote_average,
-                    poster_path=poster_path
-                )
-                movie.save()
-                movie.genres.set(genres)
-                # 영화 정보 출력
-                movie_data['genre_ids'] = genre_names
-                movie_data['poster_path']=poster_path
-                
-                
+                    movie = Movie(
+                        id=movie_data['id'],
+                        title=movie_data['title'],
+                        overview=movie_data['overview'],
+                        release_date=release_date,
+                        vote_average = vote_average,
+                        poster_path=poster_path
+                    )
+                    movie.save()
+                    movie.genres.set(genres)
+                    # 영화 정보 출력
+                    movie_data['genre_ids'] = genre_names
+                    movie_data['poster_path']=poster_path
+                    
+                    
 
-                movie_json = {
-                    "id": movie_data['id'],
-                    "title": movie_data['title'],
-                    "overview": movie_data['overview'],
-                    "release_date" : release_date,
-                    "vote_average" : vote_average,
-                    "genres" : movie_data['genre_ids'],
-                    "poster_path" : movie_data['poster_path']
-                }
-                
-                serialized_data.append(movie_json)
+                    movie_json = {
+                        "id": movie_data['id'],
+                        "title": movie_data['title'],
+                        "overview": movie_data['overview'],
+                        "release_date" : release_date,
+                        "vote_average" : vote_average,
+                        "genres" : movie_data['genre_ids'],
+                        "poster_path" : movie_data['poster_path']
+                    }
+                    
+                    serialized_data.append(movie_json)
                 
         return Response(serialized_data)
           

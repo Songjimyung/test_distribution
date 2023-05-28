@@ -31,16 +31,19 @@ def similar_overview(csv_file_path, target_movie_index, top_n=5):
     similar_movies = []
     for index in sorted_similar[1:top_n+1]:
         movie = movie_data[index]
+        if movie['poster_path']is not None:
+                poster_path = "https://image.tmdb.org/t/p/w500/" + movie['poster_path']
+        else:
+                poster_path = None
         similar_movies.append({
+            'id': movie['id'],
             'title': movie['title'],
             'overview': movie['overview'],
             'release_date': movie['release_date'],
             'vote_average': movie['vote_average'],
-            'poster_path': movie['poster_path'],
+            'poster_path': poster_path,
             'genre_ids': movie['genre_ids']
         })
 
     return similar_movies
 
-similar_overview('movie_data.csv', 3 )
-print(similar_overview)
