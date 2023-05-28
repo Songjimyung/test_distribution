@@ -89,7 +89,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.set_password(password)
 
         # is_active = False로 지정해주어 email 인증을 하기 전에 접속 불가능하게 설정
-        user.is_active = False
+        user.is_active = True
         user.save()
 
         # jwt 토큰 생성
