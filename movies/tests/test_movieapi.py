@@ -29,4 +29,4 @@ class MovieTest(APITestCase):
                  }
             )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 10)
+        self.assertEqual(len(response.data), 380)

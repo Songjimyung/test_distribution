@@ -22,7 +22,7 @@ class UserSigninTest(APITestCase):
             2. 생성된 사용자 데이터로 POST 요청을 보냅니다.
             3. status_code가 200인지 확인하여 로그인이 성공적으로 이루어졌는지 확인합니다.
         '''
-        response = self.client.post(reverse('token_obtain_pair'), self.data)
+        response = self.client.post(reverse('user:token_obtain_pair'), self.data)
         self.assertEqual(response.status_code, 200)
 
 
@@ -46,7 +46,7 @@ class UserMypageTest(APITestCase):
             3. status_code가 200인지 확인하여 로그인이 성공적으로 이루어졌는지 확인합니다.
         '''
         # 'token_obtain_pair' 엔드포인트를 호출하여 액세스 토큰을 얻습니다.
-        response = self.client.post(reverse('token_obtain_pair'), self.data)
+        response = self.client.post(reverse('user:token_obtain_pair'), self.data)
         self.assertEqual(response.status_code, 200)
 
     def test_get_user_data(self):
@@ -57,9 +57,9 @@ class UserMypageTest(APITestCase):
             3. GET 요청을 보내고 status_code가 200인지 확인합니다.
             4. response 데이터의 'user_name'이 예상되는 값과 일치하는지 확인합니다.
         '''
-        access_token = self.client.post(reverse('token_obtain_pair'), self.data).data['access']
+        access_token = self.client.post(reverse('user:token_obtain_pair'), self.data).data['access']
         response = self.client.get(
-            path=reverse("my_page_view", args=['1']),
+            path=reverse("user:my_page_view", args=['1']),
             HTTP_AUTHORIZATION=f"Bearer {access_token}"
         )
         self.assertEqual(response.status_code, 200)
