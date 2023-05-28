@@ -142,6 +142,14 @@ class SaveMoviesView(APIView):
                             release_date = datetime.strptime(release_date_str, '%Y-%m-%d').date()
                         except ValueError:
                             release_date = None
+                    genre_ids = movie_data['genre_ids']
+                    genres = []
+                    for genre_id in genre_ids:
+                        try:
+                            genre = Genre.objects.get(id=genre_id)
+                            genres.append(genre)
+                        except: 
+                            pass
 
                     movie = Movie(
                         id=movie_data['id'],
@@ -150,9 +158,9 @@ class SaveMoviesView(APIView):
                         release_date=release_date,
                         vote_average = vote_average,
                         poster_path=poster_path,
-                        genres = movie_data['genre_ids']
                     )
                     movie.save()
+                    movie.genres.set(genres)
                     
 
 # 영화 상세 페이지 view
