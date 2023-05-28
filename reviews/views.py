@@ -62,7 +62,7 @@ class LikeView(APIView):
         review = get_object_or_404(Review, id = review_id, movie=movie_id)
         if request.user in review.like.all():
             review.like.remove(request.user)
-            return Response("unlike 했습니다", status=status.HTTP_200_OK)
+            return Response({'message':'좋아요 취소!'}, status=status.HTTP_200_OK)
         else:
             review.like.add(request.user)
-            return Response("like 했습니다", status=status.HTTP_200_OK)
+            return Response({'message':'좋아요 성공!'}, status=status.HTTP_200_OK)
