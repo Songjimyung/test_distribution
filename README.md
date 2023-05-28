@@ -1,15 +1,16 @@
-# AIA6_BackEnd
-AIA6_BackEnd
+# Coovie 
 
-장르와 평점을 기준으로 영화를 추천해주는 사이트입니다.
+![](https://img.shields.io/github/license/joohan10/AIA6_Backend?color=blue)
 
+**Coovie**(Cosine + Movie)는 장르와 줄거리를 기준으로 AI가 영화를 추천해주는 사이트입니다.
 
-![photo-1485846234645-a62644f84728](https://github.com/nueeng/AIA6_BackEnd/assets/127704498/3122696a-1247-442b-9f4b-4bf357419313)
-웹페이지 이미지 들어갈 예정  
+DB의 랜덤한 영화들 중 6개를 랜덤으로 보여줍니다. 사용자는 6개의 영화 중 마음에 드는 영화가 없다면 '다시검색'을 통해 영화를 다시 뽑을 수 있습니다. AI는 사용자가 선택한 영화를 기준으로 줄거리가 비슷한 영화를 코사인 유사도(Cosine similarity)를 사용하여 새로운 영화를 추천해줍니다.
+
+![README](https://github.com/nueeng/AIA6_FrontEnd/assets/127704498/536ffe64-6d51-4e71-b832-8ed0f0379662)
 
 [Frontend Repository](https://github.com/nueeng/AIA6_FrontEnd)  
 
-## 📚 Stacks
+## Stacks
 
 <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white"><img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white"><img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
 
@@ -20,35 +21,46 @@ AIA6_BackEnd
 <img src="https://img.shields.io/badge/TMDB-pink?style=for-the-badge&logo=themoviedatabase&logoColor=black">
 
 
-## 📽 Dependency
+## Dependencies
 
-의존성 PIP
+- Django
+- Django REST framework
+- Django-cors-headers
+- Simple JWT
+- requests
+- pylint
+- scikit-learn
+- NumPy
+- pandas
 
+## 🎬 Description
 
-
-## 🎬 Features
-
-- 로그인 / 회원가입
-    - 회원가입(이메일 or 소셜은 추후 논의)
+- 회원 기능
+    - 회원가입
     - 로그인
     - 로그아웃
-    - 마이페이지  
-  
-- 영화
-    - TMDB API를 사용하여 간략한 영화정보에 후기를 달 수 있는 게시판 기능
-    - 후기 CRUD (TextField 짧게 한줄평 느낌으로!)
-    - 좋아요 기능
+    - 마이페이지 (본인이 작성한 후기 조회, 수정, 삭제 가능)
+- 후기 작성
+    - 로그인한 회원은 짧은 후기를 작성할 수 있습니다.
+    - 로그인한 회원은 평점을 남길 수 있습니다.
+    - 로그인한 회원은 좋아요 버튼을 사용할 수 있습니다.
+- 영화 추천
+    - 영화 선택 페이지 ⇒ 영화 상세 & 영화 추천 페이지
+        1. TMDB API 중 Popular Category 영화 랜덤으로 6개를 띄워줍니다. (영화 제목, 포스터, 줄거리, 평점, 장르, 개봉일)
+        2. 사용자가 마음에 드는 영화 하나를 선택하면, 해당 영화의 정보와 + 사용자가 선택한 영화와 줄거리가 유사한 영화를 AI가 5개 추천해줍니다.
+        3. 만약 마음에 드는 영화가 페이지에 없다면 다시 검색하기 버튼을 누르면 새로운 6개의 영화를 띄워줍니다.
+        4. 영화 상세 & 영화 추천 페이지에서 추천 받은 영화 5개 중 한 개를 선택하면 다시 같은 로직을 반복합니다.
 
-- 영화 추천 과정
-    - 관심있는 장르 or 영화 수집 페이지
-    1. TMDB API 중 Trending 랜덤 10개 띄워주기 (영화 제목 / 포스터)
-    2. 하나를 선택 = input, 근데 없으면?(다시 검색하기 - 또 스무개/위에서 띄운 10개는 제외)
-    3. 해당 영화 줄거리 / 포스터 / 후기 + AI가 input과 장르가 유사하고 평점이 높은 영화 추천 3개 (영화 상세 페이지)
+## 📽 API Reference
 
-## 👤 Implement AI
-<br/>
+- [TMDB API Reference](https://developer.themoviedb.org/reference/intro/getting-started)  
+  TMDB API는 The Movie Database(TMDB)에서 제공하는 영화 데이터 및 관련 정보에 액세스할 수 있는 RESTful API입니다.  
+  TMDB API중 [`GET /genre/movie/list`](https://developer.themoviedb.org/reference/genre-movie-list) 엔드포인트를 사용하여 장르와 영화를 연결하고, [`GET /movie/popular`](https://developer.themoviedb.org/reference/movie-popular-list) 엔드포인트를 사용하여 4000개의 데이터를 기준으로 AI를 학습시키고, 리뷰를 작성할 수 있습니다.
 
-AI가 구현되는 과정 상세히 적어보기
+
+## License
+
+- [MIT License](https://github.com/JooHan10/AIA6_BackEnd/blob/main/LICENSE)
 
  ## Team
  
@@ -62,18 +74,3 @@ AI가 구현되는 과정 상세히 적어보기
     <tr/>
   </tbody>
 </table>
-
-## ✅ Checklist
-
-0. **※ Machine Learning**
-1. 좌측 메뉴 바 슬라이드 인 / 슬라이드 아웃 기능
-2. 영화 추천 페이지 모달 기능
-3. 디자인 조금 더 다듬기
-4. 구글 소셜 로그인 기능
-5. tmdb api 이용한 프로젝트라고 소개글 추가
-6. 개발 끝난 후, print문이나 쓸데없는 주석, 사용되지 않는 코드 등의 legacy code 삭제시간 갖기
-7. review모델 평점 필드(rating)가 없다✅
-8. likes 테스트코드✅
-9. movie admin 등록✅
-10. review에서 movie_id 활용 로직 구체화✅
-11. 계정 아이디 validation 먹통현상
