@@ -137,7 +137,7 @@ class SimilarMoviesView(APIView):
             return Response("비슷한 영화가 없네요")
         
         similar_movies = similar_overview(csv_file_path, target_movie_index)
-             
+
         return Response(similar_movies)
     # 선택한 영화의 ID값을 가져와 csv파일에서 검색 후 인덱스 값으로 변환
     def find_movie_index(self, csv_file_path, target_movie_id):
