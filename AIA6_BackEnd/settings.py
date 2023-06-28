@@ -173,6 +173,10 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+ALLOWED_HOSTS = [
+    '*'
+]
+
 STATIC_ROOT = BASE_DIR / "static"
 STATIC_URL = '/static/'
 
